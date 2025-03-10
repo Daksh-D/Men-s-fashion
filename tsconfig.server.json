@@ -1,0 +1,29 @@
+// tsconfig.server.json
+{
+  "compilerOptions": {
+    "module": "NodeNext", // Or "Node16" - VERY IMPORTANT
+    "moduleResolution": "NodeNext", // Or "Node16" - VERY IMPORTANT
+    "target": "ESNext",   // Or a specific recent version like "ES2020"
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist",  // Output compiled JS to a 'dist' folder (optional)
+    "sourceMap": true,  // Generate source maps (helpful for debugging)
+    "rootDir": ".",    //  Important:  "." means the root of your project
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "baseUrl": ".",
+     "paths": {
+       "@/*": ["./*"]
+      }
+  },
+  "include": [
+    "server.ts", // Include your server file
+    "lib/**/*"   // Include any other TS files in your backend (e.g., lib)
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
