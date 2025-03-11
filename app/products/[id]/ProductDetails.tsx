@@ -32,7 +32,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         <div className="space-y-4">
           <div className="relative aspect-square">
             <Image
-              src={product.images?.[0] || '/placeholder-image.jpg'} // Corrected image handling
+              src={product.images?.[0] || '/placeholder-image.jpg'} // Corrected
               alt={product.name}
               fill
               className="object-cover rounded-lg"
@@ -40,7 +40,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             />
           </div>
           <div className="grid grid-cols-4 gap-4">
-            {product.images?.map((image, index) => (  // Optional chaining here too
+            {product.images?.map((image, index) => (  // Optional chaining
               <div key={index} className="relative aspect-square">
                 <Image
                   src={image}
