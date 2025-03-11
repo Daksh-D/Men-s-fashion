@@ -6,13 +6,12 @@ dotenv.config({ path: ".env" });
 if (!process.env.MONGO_URI) {
   throw new Error("MONGO_URI environment variable is not set.");
 }
-
+//Updated types
 export interface IProduct extends Document {
-  _id: string;
   name: string;
   description?: string;
   price: number;
-  images: string[];
+  images?: string[];
   category: string;
   rating?: number;
   reviews?: any[];
@@ -30,7 +29,7 @@ export interface Address {
   country: string;
 }
 
-export interface IUser extends Document {
+export interface IUser extends Document  {
   email: string;
   name: string;
   passwordHash: string;
@@ -38,8 +37,7 @@ export interface IUser extends Document {
   address?: Address;
 }
 
-export interface IOrder extends Document {
-  _id: string;
+export interface IOrder extends Document  {
   userId: string;
   items: {
     productId: string;
@@ -80,9 +78,7 @@ const ProductSchema = new Schema<IProduct>(
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
-ProductSchema.virtual("id").get(function () {
-  return this._id.toString();
-});
+
 
 // --- User Schema (with address) ---
 const UserSchema = new Schema<IUser>(
@@ -101,9 +97,7 @@ const UserSchema = new Schema<IUser>(
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
-UserSchema.virtual("id").get(function (this: mongoose.Document<any, any, IUser> & IUser) {
-  return this._id.toString();
-});
+
 
 // --- Order Schema ---
 const OrderSchema = new Schema<IOrder>(
@@ -138,9 +132,6 @@ const OrderSchema = new Schema<IOrder>(
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
-OrderSchema.virtual("id").get(function () {
-  return this._id.toString();
-});
 
 // --- Cart Interfaces & Schema ---
 export interface ICartItem {
@@ -153,7 +144,7 @@ export interface ICartItem {
   color?: string;
 }
 
-export interface ICart extends Document {
+export interface ICart extends Document  {
   userId: string;
   items: ICartItem[];
   updatedAt: Date;
@@ -177,9 +168,6 @@ const CartSchema = new Schema<ICart>(
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
-CartSchema.virtual("id").get(function (this: mongoose.Document<any, any, ICart> & ICart) {
-  return this._id.toString();
-});
 
 // --- Create and Export Models ---
 export const Product =

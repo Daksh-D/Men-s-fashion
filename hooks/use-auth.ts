@@ -5,16 +5,9 @@ import { User } from "@/types";
 interface AuthStore {
   user: User | null;
   isAuthenticated: boolean;
-  login: (
-    email: string,
-    password: string
-  ) => Promise<{ user: User }>;
-  register: (
-    email: string,
-    password: string,
-    name: string
-  ) => Promise<void>;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<{ user: User }>;
+  register: (email: string, password: string, name: string) => Promise<void>;
+  logout: () => Promise<void>; // Change to async
 }
 
 export const useAuth = create<AuthStore>()(
@@ -23,7 +16,7 @@ export const useAuth = create<AuthStore>()(
       user: null,
       isAuthenticated: false,
       login: async (email, password) => {
-        const res = await fetch("/api/login", {
+        const res = await fetch("/api/auth/login", { // Correct API path
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -33,11 +26,12 @@ export const useAuth = create<AuthStore>()(
           throw new Error(errorData.message || "Login failed");
         }
         const data = await res.json();
+          //console.log("Login successful, user data:", data.user);
         set({ user: data.user, isAuthenticated: true });
         return { user: data.user };
       },
       register: async (email, password, name) => {
-        const res = await fetch("/api/register", {
+        const res = await fetch("/api/auth/register", { // Correct API path
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password, name }),
@@ -46,14 +40,46 @@ export const useAuth = create<AuthStore>()(
           const errorData = await res.json();
           throw new Error(errorData.message || "Registration failed");
         }
-        await get().login(email, password);
+        // No need to call login, as register now logs in directly:
+        const data = await res.json();  //Registration response does not include all user information
+        set({ isAuthenticated: true }); // Important to update auth state
       },
-      logout: () => {
-        set({ user: null, isAuthenticated: false });
-        // Remove the cookie by setting it to an empty value
-        document.cookie = "auth=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      logout: async () => { // Now an async function
+          try{
+            const res = await fetch('/api/auth/logout', { method: 'POST' }); //call logout endpoint
+            if (res.ok) {
+              set({ user: null, isAuthenticated: false });
+              // No need for manual cookie deletion; server handles it
+            } else {
+              console.error('Logout failed:', await res.text()); // Log detailed error.
+            }
+          }
+          catch(err: any)
+          {
+              console.error('Logout failed:', err.message);
+          }
       },
     }),
-    { name: "auth-storage" }
+     {
+        name: "auth-storage",
+        //Specify storage options to avoid warnings
+        storage: {
+            getItem: (name) => {
+              if (typeof window === 'undefined') return null; // Handle server-side rendering
+              const item = localStorage.getItem(name);
+              return item ? JSON.parse(item) : null;
+            },
+            setItem: (name, value) => {
+              if (typeof window !== 'undefined') { // Handle server-side rendering
+                localStorage.setItem(name, JSON.stringify(value));
+              }
+            },
+          removeItem: (name) => {
+              if (typeof window !== 'undefined') { // Handle server side rendering
+                  localStorage.removeItem(name);
+              }
+          },
+        },
+    }
   )
 );

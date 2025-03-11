@@ -3,16 +3,16 @@ export interface Product {
   id: string; // Keep this for frontend convenience (virtual field)
   _id: string; // Add _id: string;  This is the MongoDB ID.
   name: string;
-  description: string;
+  description?: string; //description is optional
   price: number;
-  images: string[];
+  images?: string[];//images is optional
   category: string;
-  rating: number;
-  reviews: Review[];
-  sizes: string[];
-  colors: string[];
-  inStock: boolean;
-  createdAt: string;
+  rating?: number;// rating is optional
+  reviews?: Review[]; //reviews is optional
+  sizes?: string[]; // sizes is optional
+  colors?: string[]; // colors is optional
+  inStock?: boolean; //inStock is optional
+  createdAt?: string; //createdAt is optional
 }
 
 export interface Review {
@@ -20,7 +20,7 @@ export interface Review {
   userId: string;
   userName: string;
   userAvatar: string;
-  rating: number;
+  rating: number; // Add missing fields from your previous code
   comment: string;
   createdAt: string;
 }
