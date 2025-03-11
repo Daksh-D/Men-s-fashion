@@ -32,7 +32,7 @@ export default async function Home() {
             <h1 className="text-4xl font-bold mb-4">Welcome to ManCode</h1>
             <p className="text-lg mb-6">Discover premium men’s fashion and accessories.</p>
             <Button asChild>
-              <Link href="/categories">Shop Now</Link>
+              <Link href="/catego">Shop Now</Link>
             </Button>
           </div>
         </div>
