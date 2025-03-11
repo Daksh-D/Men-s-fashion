@@ -3,8 +3,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound, } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { categories } from '@/lib/data';
-import type { Product } from '@/types';
+import { categories } from '@/lib/data'; // KEEP the categories import
+import type { Product, Category } from '@/types'; // Import the Product type
+//import { revalidatePath } from 'next/cache'; // No need to revalidate
+
 
 interface CategoryPageProps {
   params: {
@@ -12,11 +14,13 @@ interface CategoryPageProps {
   };
 }
 
+// Fetch products from the API
 async function fetchProductsByCategory(category: string): Promise<Product[]> {
-    const res = await fetch(`/api/products?category=${category}`, {
-        cache: 'force-cache' // USE force-cache
+    const res = await fetch(`/api/products?category=${category}`, { //Corrected url
+        cache: 'no-store' // Important for dynamic updates
     });
     if (!res.ok) {
+      // This will activate the closest `error.js` Error Boundary
       throw new Error('Failed to fetch products');
     }
     return res.json();
@@ -26,10 +30,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const category = categories.find((cat) => cat.name.toLowerCase() === params.slug);
 
   if (!category) {
-    notFound();
+    notFound(); // Use Next.js's notFound function
   }
 
-  const products = await fetchProductsByCategory(params.slug);
+  const products = await fetchProductsByCategory(params.slug); // Fetch the products
 
   return (
      <div className="container mx-auto px-4 py-8">
