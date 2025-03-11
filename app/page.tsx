@@ -1,20 +1,14 @@
-// app/page.tsx (Corrected)
+// app/page.tsx
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { categories } from "@/lib/data";
-import type { Product } from "@/types";
+import ProductList from "@/components/ProductList"; // Import the client component
 
-async function fetchProducts() {
-  const res = await fetch("/api/products", {
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error("Failed to fetch products");
-  return res.json() as Promise<Product[]>;
-}
+// Removed the fetchProducts function from here
 
 export default async function Home() {
-  const products = await fetchProducts();
+  // No need to fetch products here anymore
 
   return (
     <div className="min-h-screen">
@@ -70,28 +64,8 @@ export default async function Home() {
       <section className="bg-muted py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 text-center">Featured Products</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <Link key={product._id} href={`/products/${product._id}`} className="group">
-                <div className="bg-card rounded-lg overflow-hidden border">
-                  <div className="relative aspect-square">
-                    <Image
-                      src={product.images?.[0] || '/placeholder-image.jpg'} // Corrected
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      style={{ objectFit: "cover" }}
-                      className="transition-transform group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold">{product.name}</h3>
-                    <p className="text-muted-foreground">${product.price.toFixed(2)}</p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {/* Use the ProductList component here */}
+          <ProductList />
         </div>
       </section>
     </div>
