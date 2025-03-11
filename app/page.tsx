@@ -7,7 +7,7 @@ import type { Product } from "@/types";
 
 async function fetchProducts() {
   const res = await fetch("/api/products", {
-    cache: "force-cache", // Use force-cache
+    cache: "force-cache", // USE force-cache
   });
   if (!res.ok) throw new Error("Failed to fetch products");
   return res.json() as Promise<Product[]>;

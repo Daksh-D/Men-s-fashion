@@ -6,7 +6,7 @@ import { Product } from '@/types';
 
 async function fetchProductsBySearch(query: string): Promise<Product[]> {
   const res = await fetch(`/api/products/search?q=${query}`,{
-        cache: 'force-cache' // Important for dynamic updates
+        cache: 'force-cache' // USE force-cache
     });
   if (!res.ok) {
     throw new Error('Failed to fetch products');

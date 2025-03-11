@@ -14,7 +14,7 @@ interface CategoryPageProps {
 
 async function fetchProductsByCategory(category: string): Promise<Product[]> {
     const res = await fetch(`/api/products?category=${category}`, {
-        cache: 'force-cache' // Use force-cache
+        cache: 'force-cache' // USE force-cache
     });
     if (!res.ok) {
       throw new Error('Failed to fetch products');
@@ -44,7 +44,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               <div className="bg-card rounded-lg overflow-hidden border">
                 <div className="relative aspect-square">
                   <Image
-                    src={product.images?.[0] || '/placeholder-image.jpg'} // Corrected
+                    src={product.images?.[0] || '/placeholder-image.jpg'} // Corrected image handling
                     alt={product.name}
                     fill
                     className="object-cover transition-transform group-hover:scale-105"
