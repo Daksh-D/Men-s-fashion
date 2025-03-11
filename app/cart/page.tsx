@@ -26,14 +26,12 @@ export default function CartPage() {
   const { toast } = useToast();
   const auth = useAuth();
 
-  // 1) Fetch cart on mount if user is logged in
   useEffect(() => {
     if (auth.isAuthenticated) {
       cart.fetchCart();
     }
   }, [auth.isAuthenticated, cart]);
 
-  // 2) Handle Checkout
   const handleCheckout = async () => {
     if (!auth.isAuthenticated) {
       toast({
@@ -45,17 +43,17 @@ export default function CartPage() {
       return;
     }
     try {
-      const response = await fetch("/api/checkout", {
+      const response = await fetch("/api/checkout", { // Correct URL
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: cart.items, userId: auth.user?.id }),
+        body: JSON.stringify({ items: cart.items }), // Only send items
       });
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(`Checkout failed: ${response.status} - ${errorData.message}`);
       }
       const { url } = await response.json();
-      router.push(url);
+      router.push(url); // Redirect to Stripe Checkout
     } catch (error: any) {
       toast({
         title: "Error",
@@ -65,19 +63,17 @@ export default function CartPage() {
     }
   };
 
-  // 3) If cart is empty
   if (cart.items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-3xl font-bold mb-8">Your Cart is Empty</h1>
         <Button asChild>
-          <Link href="/shop">Continue Shopping</Link>
+          <Link href="/categories">Continue Shopping</Link> {/* Link to categories */}
         </Button>
       </div>
     );
   }
 
-  // 4) Cart UI
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>

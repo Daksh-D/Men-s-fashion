@@ -32,7 +32,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         <div className="space-y-4">
           <div className="relative aspect-square">
             <Image
-              src={product.images[0]}
+              src={product.images?.[0] || '/placeholder-image.jpg'} // Corrected image handling
               alt={product.name}
               fill
               className="object-cover rounded-lg"
@@ -40,8 +40,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             />
           </div>
           <div className="grid grid-cols-4 gap-4">
-            {product.images.map((image, index) => (
-              <div key={index} className="relative aspect-square">  {/*Added Key*/}
+            {product.images?.map((image, index) => (  // Optional chaining here too
+              <div key={index} className="relative aspect-square">
                 <Image
                   src={image}
                   alt={`${product.name} ${index + 1}`}
@@ -68,7 +68,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 />
               ))}
               <span className="ml-2 text-muted-foreground">
-                ({product.reviews?.length || 0} reviews) {/* Handle potential undefined */}
+                ({product.reviews?.length || 0} reviews)
               </span>
             </div>
             <p className="text-muted-foreground">{product.description}</p>
@@ -118,13 +118,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             onClick={() =>
               cart.addItem({
                 id: crypto.randomUUID(), // Unique cart item ID
-                productId: product._id,  // Use product._id
+                productId: product._id,
                 name: product.name,
                 price: product.price,
-                image: product.images[0],
+                image: product.images?.[0] || '/placeholder-image.jpg', // Use placeholder if no images
                 quantity: 1,
-                size: selectedSize, //  selected size
-                color: selectedColor, //  selected color
+                size: selectedSize,
+                color: selectedColor,
               })
             }
           >
@@ -168,9 +168,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 <CardTitle>Reviews</CardTitle>
               </CardHeader>
               <CardContent>
-                {product.reviews && product.reviews.length > 0 ? ( // Check for undefined reviews
+                {product.reviews && product.reviews.length > 0 ? (
                   product.reviews.map((review) => (
-                    <div key={review.id} className="mb-4"> {/*Added Key */}
+                    <div key={review.id} className="mb-4">
                       <p>{review.userName}: {review.comment}</p>
                       <p>Rating: {review.rating}/5</p>
                     </div>

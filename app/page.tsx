@@ -1,3 +1,4 @@
+// app/page.tsx (Corrected)
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,7 @@ import { categories } from "@/lib/data";
 import type { Product } from "@/types";
 
 async function fetchProducts() {
-  const res = await fetch("http://localhost:3001/api/products", {
+  const res = await fetch("/api/products", {
     cache: "no-store",
   });
   if (!res.ok) throw new Error("Failed to fetch products");
@@ -32,7 +33,7 @@ export default async function Home() {
             <h1 className="text-4xl font-bold mb-4">Welcome to ManCode</h1>
             <p className="text-lg mb-6">Discover premium men’s fashion and accessories.</p>
             <Button asChild>
-              <Link href="/categories">Shop Now</Link> {/* Changed to /categories */}
+              <Link href="/categories">Shop Now</Link>
             </Button>
           </div>
         </div>
@@ -75,7 +76,7 @@ export default async function Home() {
                 <div className="bg-card rounded-lg overflow-hidden border">
                   <div className="relative aspect-square">
                     <Image
-                      src={product.images[0]}
+                      src={product.images?.[0] || '/placeholder-image.jpg'} // Corrected
                       alt={product.name}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
