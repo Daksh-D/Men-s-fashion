@@ -2,6 +2,8 @@
 import { notFound } from 'next/navigation';
 import type { Product } from '@/types';
 import ProductDetails from './ProductDetails'; // Client Component
+import { headers } from 'next/headers';
+
 
 interface ProductPageProps {
   params: {
@@ -9,12 +11,15 @@ interface ProductPageProps {
   };
 }
 
-async function fetchProduct(id: string): Promise<Product | null> { // Return type includes null
-  const res = await fetch(`http://localhost:3001/api/products/${id}`, { cache: 'no-store' });
+async function fetchProduct(id: string): Promise<Product | null> {
+  const headersList = headers();
+  const host = headersList.get('host');
+  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+  const baseURL = `${protocol}://${host}`;
+
+  const res = await fetch(`${baseURL}/api/products/${id}`, { cache: 'no-store' }); //Full URL
 
   if (!res.ok) {
-    // If the response is NOT ok (e.g., 404),  we DO NOT throw a general error here.
-    // Instead, we return null. Throwing an error here bypasses notFound().
     if (res.status === 404) {
         return null; // Product not found.
     } else {
@@ -25,14 +30,12 @@ async function fetchProduct(id: string): Promise<Product | null> { // Return typ
   return res.json();
 }
 
-
 export default async function ProductPage({ params }: ProductPageProps) {
   const product = await fetchProduct(params.id);
 
   if (!product) {
-    notFound(); // Now, notFound() is called correctly
+    notFound();
   }
 
-  // Only pass data to the client component
   return <ProductDetails product={product} />;
 }

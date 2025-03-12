@@ -1,23 +1,46 @@
-//File: app/page.tsx
+"use client"; // Added: Client Component
+
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { categories } from "@/lib/data";
 import type { Product } from "@/types";
-import ProductList from "@/components/ProductList";
-
-export const dynamic = 'force-dynamic'; // Add this
+import { useState, useEffect } from "react"; // Import useState and useEffect
 
 async function fetchProducts() {
-  const res = await fetch("/api/products", {
-    cache: "force-cache",
+  const res = await fetch("/api/products", { //keep simple /api/products
+    cache: "no-store", //  no-store is fine in client components.
   });
   if (!res.ok) throw new Error("Failed to fetch products");
   return res.json() as Promise<Product[]>;
 }
 
-export default async function Home() {
-  // No need to fetch products here anymore
+export default function Home() { // No longer async
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const fetchedProducts = await fetchProducts();
+        setProducts(fetchedProducts);
+      } catch (err: any) {
+        setError(err.message || "An unknown error occurred");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []); // Empty dependency array means this runs once on mount
+
+  if (loading) {
+    return <div>Loading...</div>; // Or use your Skeleton component
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="min-h-screen">
@@ -73,8 +96,28 @@ export default async function Home() {
       <section className="bg-muted py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 text-center">Featured Products</h2>
-          {/* Use the ProductList component here */}
-          <ProductList />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <Link key={product._id} href={`/products/${product._id}`} className="group">
+                <div className="bg-card rounded-lg overflow-hidden border">
+                  <div className="relative aspect-square">
+                    <Image
+                      src={product.images?.[0] || '/placeholder-image.jpg'} // Corrected image handling
+                      alt={product.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      style={{ objectFit: "cover" }}
+                      className="transition-transform group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold">{product.name}</h3>
+                    <p className="text-muted-foreground">${product.price.toFixed(2)}</p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
     </div>
