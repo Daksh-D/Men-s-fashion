@@ -3,10 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound, } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { categories } from '@/lib/data'; // KEEP the categories import
-import type { Product, Category } from '@/types'; // Import the Product type
-//import { revalidatePath } from 'next/cache'; // No need to revalidate
-
+import { categories } from '@/lib/data';
+import type { Product } from '@/types';
 
 interface CategoryPageProps {
   params: {
@@ -14,13 +12,12 @@ interface CategoryPageProps {
   };
 }
 
-// Fetch products from the API
 async function fetchProductsByCategory(category: string): Promise<Product[]> {
-    const res = await fetch(`/api/products?category=${category}`, { //Corrected url
-        cache: 'no-store' // Important for dynamic updates
+    const baseURL = process.env.NEXT_PUBLIC_BASE_URL || ''; // Use environment variable
+    const res = await fetch(`${baseURL}/api/products?category=${category}`, {
+        cache: 'no-store' // Now safe to use no-store
     });
     if (!res.ok) {
-      // This will activate the closest `error.js` Error Boundary
       throw new Error('Failed to fetch products');
     }
     return res.json();

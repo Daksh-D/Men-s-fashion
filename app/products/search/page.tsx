@@ -5,15 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Product } from '@/types';
 
 async function fetchProductsBySearch(query: string): Promise<Product[]> {
-    const res = await fetch(`/api/products/search?q=${query}`); // Corrected URL
+    const baseURL = process.env.NEXT_PUBLIC_BASE_URL || ''; // Use environment variable
+    const res = await fetch(`${baseURL}/api/products/search?q=${query}`,{
+        cache: 'no-store'
+    });
     if (!res.ok) {
         throw new Error('Failed to fetch products');
     }
     return res.json();
 }
 
-interface SearchProps {
-    searchParams: {
+interface SearchProps{
+    searchParams:{
         q: string;
     }
 }
@@ -24,7 +27,7 @@ export default async function SearchPage({ searchParams }: SearchProps) {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-8">Search Results for "{query}"</h1>
+            <h1 className="text-3xl font-bold mb-8">Search Results for &quot;{query}&quot;</h1>
             {products.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {products.map((product) => (
