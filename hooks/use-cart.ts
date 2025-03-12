@@ -18,8 +18,7 @@ export const useCart = create<CartStore>((set, get) => ({
   items: [],
   fetchCart: async () => {
     try {
-      // No need for token in header; Next.js handles cookies automatically
-      const res = await fetch("/api/cart"); // Correct API path
+      const res = await fetch("/api/cart");
       if (res.ok) {
         const data = await res.json();
          const normalized = data.map((item: any) => ({
@@ -27,8 +26,9 @@ export const useCart = create<CartStore>((set, get) => ({
             price: Number(item.price),
         }));
         set({ items: normalized });
-      } else {
-          console.error("Failed to fetch cart:", await res.text());
+      }
+      else {
+        console.error("Failed to fetch cart:", await res.text()); // More detailed error
       }
     } catch (error) {
       console.error("Failed to fetch cart", error);

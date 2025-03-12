@@ -3,7 +3,7 @@ import { connectDB, User } from '@/lib/db';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
-import { SignJWT } from 'jose';
+import { SignJWT } from 'jose'; // Import jose
 import { cookies } from 'next/headers';
 
 connectDB();
@@ -34,35 +34,35 @@ export async function POST(request: Request) {
 
         await newUser.save();
         // Use lean() *after* saving to get a plain JS object
-        const leanUser = await User.findOne({ email: newUser.email }).lean();
+         const leanUser = await User.findOne({ email: newUser.email }).lean();
 
          if (!leanUser) {
-          return NextResponse.json({ message: "Failed to retrieve created user" }, { status: 500 }); // Should not happen, but good to check
-        }
+           return NextResponse.json({ message: "Failed to retrieve created user" }, { status: 500 }); // Should not happen, but good to check
+         }
 
         // --- JWT Creation (Same as login) ---
         const secret = new TextEncoder().encode(process.env.JWT_SECRET);
         const alg = 'HS256';
 
-        const jwt = await new SignJWT({
-             uid: leanUser._id, // Now TypeScript knows this is a string
+         const jwt = await new SignJWT({
+             uid: leanUser._id,
              role: leanUser.role
-            })
-            .setProtectedHeader({ alg })
-            .setIssuedAt()
-            .setExpirationTime('7d') // Set expiration time (e.g., 7 days)
-            .sign(secret);
+             })
+             .setProtectedHeader({ alg })
+             .setIssuedAt()
+             .setExpirationTime('7d') // Set expiration time (e.g., 7 days)
+             .sign(secret);
 
-        // --- Set Cookie (Same as login) ---
-          cookies().set({
-            name: 'auth',
-            value: jwt,
-            httpOnly: true,
-            path: '/',
-            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-            sameSite: 'lax',
-            maxAge: 60 * 60 * 24 * 7, // 7 days (MUST match expiration time)
-          });
+         // --- Set Cookie (Same as login) ---
+           cookies().set({
+             name: 'auth',
+             value: jwt,
+             httpOnly: true,
+             path: '/',
+             secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+             sameSite: 'lax',
+             maxAge: 60 * 60 * 24 * 7, // 7 days (MUST match expiration time)
+           });
 
 
         return NextResponse.json({ message: "User registered successfully" }, {status: 201});

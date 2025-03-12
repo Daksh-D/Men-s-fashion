@@ -6,7 +6,7 @@ dotenv.config({ path: ".env" });
 if (!process.env.MONGO_URI) {
   throw new Error("MONGO_URI environment variable is not set.");
 }
-//Updated types
+
 export interface IProduct extends Document {
   name: string;
   description?: string;
@@ -142,6 +142,7 @@ export interface ICartItem {
   quantity: number;
   size?: string;
   color?: string;
+  id: string;
 }
 
 export interface ICart extends Document  {
@@ -162,6 +163,7 @@ const CartSchema = new Schema<ICart>(
         quantity: { type: Number, required: true },
         size: String,
         color: String,
+        id: {type: String, required: true}
       },
     ],
     updatedAt: { type: Date, default: Date.now },
@@ -183,15 +185,22 @@ export const Cart =
   (mongoose.models.Cart as Model<ICart>) ||
   mongoose.model<ICart>("Cart", CartSchema);
 
-export async function connectDB() {
-  if (mongoose.connection.readyState >= 1) {
-    return;
+  let cachedConnection: typeof mongoose | null = null; // Cache the connection
+
+  export async function connectDB() {
+    if (cachedConnection) {
+      console.log("Using cached MongoDB connection");
+      return cachedConnection;
+    }
+
+    try {
+      console.log("Attempting to connect to MongoDB with URI:", process.env.MONGO_URI); // Log the URI
+      const connection = await mongoose.connect(process.env.MONGO_URI!);
+      cachedConnection = connection; // Store the connection
+      console.log("Connected to MongoDB");
+      return connection;
+    } catch (error) {
+      console.error("MongoDB Connection Error:", error);
+      throw error; // Re-throw the error to be caught by the caller
+    }
   }
-  try {
-    await mongoose.connect(process.env.MONGO_URI!);
-    console.log("Connected to MongoDB");
-  } catch (error) {
-    console.error("MongoDB Connection Error:", error);
-    throw error;
-  }
-}

@@ -6,6 +6,7 @@ import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose'; // Import jwtVerify
 
 connectDB();
+export const dynamic = 'force-dynamic';
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
     try {

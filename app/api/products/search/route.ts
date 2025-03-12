@@ -10,29 +10,27 @@ const searchSchema = z.object({
 });
 
 export async function GET(request: Request) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const q = searchParams.get('q');
+     try {
+       await connectDB();
+       const { searchParams } = new URL(request.url);
+       const q = searchParams.get('q');
+       const validatedQuery = searchSchema.safeParse({ q });
 
-        // Validate the query parameter using Zod
-        const validatedQuery = searchSchema.safeParse({ q }); // Use safeParse
-
-        if (!validatedQuery.success) {
-          return NextResponse.json(
-            { message: "Invalid search query", errors: validatedQuery.error.errors },
-            { status: 400 }
-          );
-        }
-        //If validation is successful, proceed
-        const query = validatedQuery.data.q;
-
-
+       if (!validatedQuery.success) {
+         return NextResponse.json(
+           { message: "Invalid search query", errors: validatedQuery.error.errors },
+           { status: 400 }
+         );
+       }
+       const query = validatedQuery.data.q;
 
         // Use a text index for search (requires index to be created in MongoDB)
         const products = await Product.find({ $text: { $search: query } });
         return NextResponse.json(products);
     } catch (error: any) {
         console.error("Error during product search:", error);
-        return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+        return NextResponse.json({ message: "Internal Server Error" }, {status: 500});
     }
 }
+
+export const dynamic = 'force-dynamic';

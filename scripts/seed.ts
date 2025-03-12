@@ -1,20 +1,20 @@
-// scripts/seed.ts (Option 1 - Generic Images)
+// File: scripts/seed.ts
 import mongoose from 'mongoose';
 import { connectDB, Product, IProduct } from '../lib/db';
-import { faker, fakerEN_US } from '@faker-js/faker';
+import { faker, fakerEN_US } from '@faker-js/faker'; // Corrected import
 
 const categories = ['Shoes', 'Perfumes', 'Trousers', 'Shirts', 'T-Shirts', 'Accessories'];
 
+// Correct type: Use mongoose.mongo.OptionalId for creation
 type ProductCreate = Omit<IProduct, keyof mongoose.Document> & { _id?: mongoose.Types.ObjectId };
 
-const generateFakeProduct = (): ProductCreate => ({
+const generateFakeProduct = (): ProductCreate => ({ // Corrected return type
     name: fakerEN_US.commerce.productName(),
     description: fakerEN_US.commerce.productDescription(),
     price: parseFloat(fakerEN_US.commerce.price()),
-    // Use faker.image.url() for generic images
     images: [
-        fakerEN_US.image.url({ width: 640, height: 480 }), // Correct usage
-        fakerEN_US.image.url({ width: 640, height: 480 }), // Correct usage
+      fakerEN_US.image.url({ width: 640, height: 480 }),  // Corrected image URL
+      fakerEN_US.image.url({ width: 640, height: 480 }),  // Corrected image URL
     ],
     category: fakerEN_US.helpers.arrayElement(categories),
     rating: fakerEN_US.number.int({ min: 1, max: 5 }),
@@ -24,8 +24,6 @@ const generateFakeProduct = (): ProductCreate => ({
     inStock: fakerEN_US.datatype.boolean(),
     createdAt: new Date(),
 });
-
-// ... (rest of the seedDB function remains the same) ...
 
 const seedDB = async () => {
     try {

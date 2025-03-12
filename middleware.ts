@@ -43,6 +43,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  runtime: 'nodejs',
   matcher: ['/admin/:path*', '/api/admin/:path*', '/api/users/me/address'],
 };

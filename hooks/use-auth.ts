@@ -7,7 +7,7 @@ interface AuthStore {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<{ user: User }>;
   register: (email: string, password: string, name: string) => Promise<void>;
-  logout: () => Promise<void>; // Change to async
+  logout: () => Promise<void>;
 }
 
 export const useAuth = create<AuthStore>()(
@@ -16,7 +16,7 @@ export const useAuth = create<AuthStore>()(
       user: null,
       isAuthenticated: false,
       login: async (email, password) => {
-        const res = await fetch("/api/auth/login", { // Correct API path
+        const res = await fetch("/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -26,12 +26,12 @@ export const useAuth = create<AuthStore>()(
           throw new Error(errorData.message || "Login failed");
         }
         const data = await res.json();
-          //console.log("Login successful, user data:", data.user);
+          //console.log("Login successful, user data:", data.user); //Debugging
         set({ user: data.user, isAuthenticated: true });
         return { user: data.user };
       },
       register: async (email, password, name) => {
-        const res = await fetch("/api/auth/register", { // Correct API path
+        const res = await fetch("/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password, name }),
@@ -40,11 +40,10 @@ export const useAuth = create<AuthStore>()(
           const errorData = await res.json();
           throw new Error(errorData.message || "Registration failed");
         }
-        // No need to call login, as register now logs in directly:
-        const data = await res.json();  //Registration response does not include all user information
+         const data = await res.json();  //Registration response does not include all user information
         set({ isAuthenticated: true }); // Important to update auth state
       },
-      logout: async () => { // Now an async function
+      logout: async () => {
           try{
             const res = await fetch('/api/auth/logout', { method: 'POST' }); //call logout endpoint
             if (res.ok) {

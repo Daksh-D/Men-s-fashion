@@ -14,6 +14,8 @@ interface CategoryPageProps {
   };
 }
 
+
+
 // Fetch products from the API
 async function fetchProductsByCategory(category: string): Promise<Product[]> {
     const res = await fetch(`/api/products?category=${category}`, { //Corrected url

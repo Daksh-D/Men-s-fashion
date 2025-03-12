@@ -1,11 +1,20 @@
-// app/page.tsx
+//File: app/page.tsx
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { categories } from "@/lib/data";
-import ProductList from "@/components/ProductList"; // Import the client component
+import type { Product } from "@/types";
+import ProductList from "@/components/ProductList";
 
-// Removed the fetchProducts function from here
+export const dynamic = 'force-dynamic'; // Add this
+
+async function fetchProducts() {
+  const res = await fetch("/api/products", {
+    cache: "force-cache",
+  });
+  if (!res.ok) throw new Error("Failed to fetch products");
+  return res.json() as Promise<Product[]>;
+}
 
 export default async function Home() {
   // No need to fetch products here anymore

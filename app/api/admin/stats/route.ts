@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose'; // Import jwtVerify
 
 connectDB();
-
+ export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
   try {
 
@@ -39,8 +39,8 @@ export async function GET(request: Request) {
     ]);
 
     const formattedRevenueData = monthlyRevenue.map((item) => ({
-      month: `${item._id.year}-${String(item._id.month).padStart(2, "0")}`,
-      revenue: item.revenue,
+        month: `${item._id.year}-${String(item._id.month).padStart(2, "0")}`,
+        revenue: item.revenue,
     }));
 
     return NextResponse.json({

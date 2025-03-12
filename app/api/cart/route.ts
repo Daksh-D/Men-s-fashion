@@ -1,3 +1,4 @@
+// app/api/cart/route.ts
 import { connectDB, Cart } from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
@@ -25,16 +26,17 @@ const cartSchema = z.object({
 export async function GET(request: Request) {
 
     try {
-      const cookieStore = cookies();
-      const token = cookieStore.get('auth')?.value;
+         const cookieStore = cookies();
+         const token = cookieStore.get('auth')?.value;
 
-      if (!token) {
-          return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-      }
+         if (!token) {
+             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+         }
 
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-      const { payload } = await jwtVerify(token, secret);
-      const userId = payload.uid as string;
+         const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+         const { payload } = await jwtVerify(token, secret);
+         const userId = payload.uid as string; // Extract userId from JWT
+
 
         const cart = await Cart.findOne({ userId });
         return NextResponse.json(cart ? cart.items : [], {status: 200});
@@ -46,36 +48,36 @@ export async function GET(request: Request) {
 
 // Update/Create the cart
 export async function POST(request: Request) {
- try {
-     const cookieStore = cookies();
-     const token = cookieStore.get('auth')?.value;
-     if (!token) {
-       return NextResponse.json({message: 'Unauthorized'}, {status: 401});
-     }
+  try {
+      const cookieStore = cookies();
+       const token = cookieStore.get('auth')?.value;
+       if (!token) {
+         return NextResponse.json({message: 'Unauthorized'}, {status: 401});
+       }
 
-     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-     const { payload } = await jwtVerify(token, secret);
-     const userId = payload.uid as string;
+       const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+       const { payload } = await jwtVerify(token, secret);
+       const userId = payload.uid as string;
 
-    const { items } = await request.json();
-    const validatedData = cartSchema.parse({items}); //Validate with zod
+      const { items } = await request.json();
+      const validatedData = cartSchema.parse({items}); //Validate with zod
 
-    let cart = await Cart.findOne({ userId });
+      let cart = await Cart.findOne({ userId });
 
-    if (cart) {
-      cart.items = validatedData.items;
-      cart.updatedAt = new Date();
-      await cart.save();
-    } else {
-      cart = new Cart({ userId, items: validatedData.items });
-      await cart.save();
+      if (cart) {
+        cart.items = validatedData.items;
+        cart.updatedAt = new Date();
+        await cart.save();
+      } else {
+        cart = new Cart({ userId, items: validatedData.items });
+        await cart.save();
+      }
+      return NextResponse.json(cart.items, {status: 200});
+    } catch (error: any) {
+       if (error instanceof z.ZodError) {
+           return NextResponse.json({message: 'Invalid request data', errors: error.errors }, {status: 400});
+       }
+       console.error("POST /api/cart error:", error);
+      return NextResponse.json({ message: error.message }, {status: 500});
     }
-    return NextResponse.json(cart.items, {status: 200});
-  } catch (error: any) {
-     if (error instanceof z.ZodError) {
-         return NextResponse.json({message: 'Invalid request data', errors: error.errors }, {status: 400});
-     }
-     console.error("POST /api/cart error:", error);
-    return NextResponse.json({ message: error.message }, {status: 500});
-  }
 }

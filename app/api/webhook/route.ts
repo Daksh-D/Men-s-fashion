@@ -33,7 +33,7 @@ async function createOrderFromSession(session: Stripe.Checkout.Session) {
       items: orderItems,
       total: session.amount_total! / 100,
       shippingAddress: {
-        street: session.shipping_details?.address?.line1 || null,
+        street: session.shipping_details?.address?.line1 || null,  // Use null as default
         city: session.shipping_details?.address?.city || null,
         state: session.shipping_details?.address?.state || null,
         zip: session.shipping_details?.address?.postal_code || null,
@@ -74,13 +74,5 @@ export async function POST(req: Request) {
   }
   return NextResponse.json({ received: true });
 }
-
-// REMOVE THIS ENTIRE BLOCK:
-// export const config = {
-//   api: {
-//     bodyParser: false,
-//   },
-// };
-//REPLACE WITH
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'

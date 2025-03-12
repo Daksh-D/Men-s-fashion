@@ -5,6 +5,7 @@ import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';  // Import jwtVerify
 
 connectDB();
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
