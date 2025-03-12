@@ -1,4 +1,5 @@
 // app/api/products/[id]/route.ts
+"use client";
 import { connectDB, Product } from '@/lib/db';
 import { jwtVerify } from 'jose';
 import { isValidObjectId } from 'mongoose';

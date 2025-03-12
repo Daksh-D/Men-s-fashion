@@ -1,4 +1,6 @@
 // app/api/webhook/route.ts
+"use client";
+
 import { connectDB, Order } from '@/lib/db';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';

@@ -1,4 +1,5 @@
 // app/api/products/route.ts
+"use client";
 import { connectDB, Product } from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';

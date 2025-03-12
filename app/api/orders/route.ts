@@ -1,4 +1,6 @@
 // app/api/orders/route.ts
+"use client";
+
 import { connectDB, Order } from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';

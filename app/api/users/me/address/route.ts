@@ -1,4 +1,6 @@
 // app/api/users/me/address/route.ts
+"use client";
+
 import { connectDB, User } from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
