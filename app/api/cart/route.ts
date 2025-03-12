@@ -1,9 +1,13 @@
 // app/api/cart/route.ts
+"use client";
+
 import { connectDB, Cart } from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { jwtVerify } from 'jose';
+import { use } from 'react';
+import { ClientPageRoot } from 'next/dist/client/components/client-page';
 
 connectDB();
 
